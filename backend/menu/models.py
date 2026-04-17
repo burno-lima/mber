@@ -13,5 +13,28 @@ class Dishes(models.Model):
         ('bebidas', 'Bebidas')
     ])
 
-    def __clstr__(self):
+    def __str__(self):
         return self.name
+
+
+class DishSchedule(models.Model):
+    date = models.DateField(unique=True)
+    dish = models.ForeignKey(
+        Dishes,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='schedules',
+    )
+    is_open = models.BooleanField(default=True)
+    note = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ['date']
+
+    def __str__(self):
+        if not self.is_open:
+            return f"{self.date} - Fechado"
+        if self.dish:
+            return f"{self.date} - {self.dish.name}"
+        return f"{self.date} - Aberto"
